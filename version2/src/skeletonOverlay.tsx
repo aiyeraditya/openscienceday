@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
+import { isBothHandsRaised } from "./handRaiseDetection";
 import "./App.css";
 
 type Props = {
@@ -50,7 +51,7 @@ export const SkeletonOverlay: React.FC<Props> = ({ poses, videoRef }) => {
       keypointConnections.forEach(([a, b]) => {
         const kpA = pose.keypoints[a];
         const kpB = pose.keypoints[b];
-        if (kpA.score > 0.3 && kpB.score > 0.3) {
+  if (kpA.score !== undefined && kpA.score > 0.3 && kpB.score !== undefined && kpB.score > 0.3) {
           ctx.beginPath();
           ctx.moveTo(kpA.x, kpA.y);
           ctx.lineTo(kpB.x, kpB.y);
@@ -59,7 +60,30 @@ export const SkeletonOverlay: React.FC<Props> = ({ poses, videoRef }) => {
           ctx.stroke();
         }
       });
+
+      // Draw a medal image over the head if both hands are raised
+      // Use MoveNet/BlazePose: 0 = nose, 11 = left shoulder, 12 = right shoulder, 15 = left wrist, 16 = right wrist
+      if (isBothHandsRaised(pose.keypoints as any)) {
+        const nose = pose.keypoints[0];
+        const leftEye = pose.keypoints[1];
+        const rightEye = pose.keypoints[2];
+        if (nose && nose.score && nose.score > 0.3) {
+          var offsetY = 2 * (leftEye.x - rightEye.x); // Double the distance from nose to left eye
+          const img = new window.Image();
+          img.src = "/medal.png";
+          // Draw image when loaded
+          img.onload = () => {
+            ctx.save();
+            ctx.shadowColor = "#FFD700";
+            ctx.shadowBlur = 10;
+            ctx.drawImage(img, nose.x - 20, nose.y + offsetY - 20, 40, 40);
+            ctx.restore();
+          };
+        }
+      }
     });
+
+  // No longer drawing a star; replaced with medal image
   }, [poses, videoRef]);
 
 return (

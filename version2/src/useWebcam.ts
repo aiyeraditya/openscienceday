@@ -8,6 +8,7 @@ export function useWebcam(videoRef: React.RefObject<HTMLVideoElement>) {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          videoRef.current.style.transform = 'scaleX(-1)'; // Mirror the webcam
         }
       } catch (err) {
         console.error("Webcam error:", err);

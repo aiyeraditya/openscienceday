@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { useWebcam } from "./useWebcam";
 import { usePoseDetection } from "./usePoseDetection";
-import { SkeletonOverlay } from "./SkeletonOverlay";
+import { SkeletonOverlay } from "./skeletonOverlay";
 import "./App.css";
 
 

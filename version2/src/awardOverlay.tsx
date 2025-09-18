@@ -1,24 +1,18 @@
 import React, { useRef, useEffect } from "react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
-import { isBothHandsRaised, isSupermanPose, isTPose } from "./queryPose";
+
 import "./App.css";
 
 type Props = {
   poses: poseDetection.Pose[];
   videoRef: React.RefObject<HTMLVideoElement>;
+  awardFunction: (keypoints: poseDetection.Keypoint[]) => boolean;
+  awardImage: HTMLImageElement;
+  punishImage?: HTMLImageElement;
+  alpha?: number;
 };
 
-// Preload award images once
-const awardImages: Record<string, HTMLImageElement> = {
-  medal: new window.Image(),
-  wow: new window.Image(),
-  superman: new window.Image(),
-};
-awardImages.medal.src = "/medal.png";
-awardImages.wow.src = "/wow.png";
-awardImages.superman.src = "/superman.png";
-
-const drawAwardImage = (ctx: CanvasRenderingContext2D, pose: poseDetection.Pose, image: HTMLImageElement) => {
+const drawAwardImage = (ctx: CanvasRenderingContext2D, pose: poseDetection.Pose, image: HTMLImageElement ) => {
   const nose = pose.keypoints[0];
   const leftEye = pose.keypoints[1];
   const rightEye = pose.keypoints[2];
@@ -35,12 +29,12 @@ const drawAwardImage = (ctx: CanvasRenderingContext2D, pose: poseDetection.Pose,
     ctx.save();
     ctx.shadowColor = "#FFD700";
     ctx.shadowBlur = 10;
-    ctx.drawImage(image, nose.x - 20, nose.y + offsetY - 20, 40, 40);
+    ctx.drawImage(image, nose.x - 20, nose.y - offsetY - 20, 100, 100);
     ctx.restore();
   }
 };
 
-export const AwardOverlay: React.FC<Props> = ({ poses, videoRef }) => {
+export const AwardOverlay: React.FC<Props> = ({ poses, videoRef, awardFunction, awardImage, punishImage, alpha }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -60,14 +54,13 @@ export const AwardOverlay: React.FC<Props> = ({ poses, videoRef }) => {
 
     poses.forEach(pose => {
       // Draw a medal image over the head if both hands are raised
-      if (isBothHandsRaised(pose.keypoints)) {
-        drawAwardImage(ctx, pose, awardImages.medal);
+      if (awardFunction(pose.keypoints)) {
+        drawAwardImage(ctx, pose, awardImage);
       }
-      if (isTPose(pose.keypoints)) {
-        drawAwardImage(ctx, pose, awardImages.wow);
-      }
-      if (isSupermanPose(pose.keypoints)) {
-        drawAwardImage(ctx, pose, awardImages.superman);
+      else {
+        if (punishImage) {
+          drawAwardImage(ctx, pose, punishImage);
+        }
       }
     });
   }, [poses, videoRef]);
@@ -77,6 +70,7 @@ export const AwardOverlay: React.FC<Props> = ({ poses, videoRef }) => {
       ref={canvasRef}
       className="overlay award-overlay"
       aria-hidden="true"
+      style={{ opacity: alpha !== undefined ? alpha : 1 }}
     />
   );
 };

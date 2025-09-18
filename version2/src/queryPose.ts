@@ -54,15 +54,24 @@ export function isTPose(landmarks: PoseLandmark[]): boolean {
     return elbowsStraight && rightArm && leftArm;
   }
 
-export function isSupermanPose(landmarks: PoseLandmark[]): boolean {
-    const ls = landmarks[5], le = landmarks[7], lw = landmarks[9];
-    const rs = landmarks[6], re = landmarks[8], rw = landmarks[10];
-    const buffer = (rs.x - ls.x) * 0.3; // Allow some buffer for arm position
-    if (![ls, le, lw, rs, re, rw].every(Boolean)) return false;
-    const rightElbowAngle = getAngle(rs, re, rw);
-    const leftElbowAngle = getAngle(ls, le, lw);
-    const rightElbowBent = rightElbowAngle > 80 && rightElbowAngle < 100;
-    const leftElbowBent = leftElbowAngle > 80 && leftElbowAngle < 100;
+export function isToesTouched(landmarks: PoseLandmark[]): boolean {
 
-    return rightElbowBent && leftElbowBent;
+    const rightWrist = landmarks[10];
+    const leftWrist = landmarks[9];
+    const rightKnee = landmarks[13];
+    const leftKnee = landmarks[14];
+
+    if (!rightWrist || !leftWrist || !rightKnee || !leftKnee) return false;
+
+    // Check if the wrists are below the knees (y is larger when lower)
+    const rightWristTouching = rightWrist.y > rightKnee.y;
+    const leftWristTouching = leftWrist.y > leftKnee.y;
+
+    return rightWristTouching && leftWristTouching;
+}
+
+export function isRightSide(landmarks: PoseLandmark[]): boolean {
+  const nose = landmarks[0];
+  if (!nose) return false;
+  return nose.x < 900; // Assuming normalized coordinates (0 to 1)
 }

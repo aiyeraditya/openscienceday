@@ -5,6 +5,7 @@ import "./App.css";
 type Props = {
   poses: poseDetection.Pose[];
   videoRef: React.RefObject<HTMLVideoElement>;
+  alpha?: number;
 };
 
 const keypointConnections = [
@@ -18,7 +19,7 @@ const keypointConnections = [
   [12, 14], [14, 16]                   // Right leg
 ];
 
-export const SkeletonOverlayBase: React.FC<Props> = ({ poses, videoRef }) => {
+export const SkeletonOverlayBase: React.FC<Props> = ({ poses, videoRef, alpha }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -35,7 +36,6 @@ export const SkeletonOverlayBase: React.FC<Props> = ({ poses, videoRef }) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log("Canvas width:", canvas.width, "Canvas height:", canvas.height, "Video width:", video.videoWidth, "Video height:", video.videoHeight);
 
     poses.forEach(pose => {
       // Draw keypoints
@@ -59,7 +59,7 @@ export const SkeletonOverlayBase: React.FC<Props> = ({ poses, videoRef }) => {
           ctx.moveTo(kpA.x, kpA.y);
           ctx.lineTo(kpB.x, kpB.y);
           ctx.strokeStyle = "lime";
-          ctx.lineWidth = 5;
+          ctx.lineWidth = 10;
           ctx.stroke();
         }
       });
@@ -70,6 +70,7 @@ export const SkeletonOverlayBase: React.FC<Props> = ({ poses, videoRef }) => {
     <canvas
       ref={canvasRef}
       className="overlay video-overlay"
+      style={{ opacity: alpha !== undefined ? alpha : 1 }}
     />
   );
 };

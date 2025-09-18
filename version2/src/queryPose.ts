@@ -75,3 +75,15 @@ export function isRightSide(landmarks: PoseLandmark[]): boolean {
   if (!nose) return false;
   return nose.x < 900; // Assuming normalized coordinates (0 to 1)
 }
+
+
+export function isTouchingObject(landmarks: PoseLandmark[], objectX: number, objectY: number, threshold: number = 50): boolean {
+  const rightWrist = landmarks[10];
+  const leftWrist = landmarks[9];
+  if (!rightWrist || !leftWrist) return false;
+
+  const rightTouching = Math.abs(rightWrist.x - objectX) < threshold && Math.abs(rightWrist.y - objectY) < threshold;
+  const leftTouching = Math.abs(leftWrist.x - objectX) < threshold && Math.abs(leftWrist.y - objectY) < threshold;
+
+  return rightTouching || leftTouching;
+}

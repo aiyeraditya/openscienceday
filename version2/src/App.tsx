@@ -1,35 +1,18 @@
-import React, { useRef } from "react";
-import { useWebcam } from "./useWebcam";
-import { usePoseDetection } from "./usePoseDetection";
-import { SkeletonOverlay } from "./SkeletonOverlay";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Disco from "./disco";
+import OverlayTest from "./OverlayTest";
 import "./App.css";
 
-
-const App: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  useWebcam(videoRef);
-  const poses = usePoseDetection(videoRef);
-
+function App() {
   return (
-    <div className="app-root">
-      <div
-        className="video-container"
-        style={{
-          width: videoRef.current?.videoWidth || 640,
-          height: videoRef.current?.videoHeight || 480,
-        }}
-      >
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="webcam-video"
-        />
-        <SkeletonOverlay poses={poses} videoRef={videoRef} />
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/* ...other routes */}
+        <Route path="/disco" element={<Disco />} />
+        <Route path="/overlay-test" element={<OverlayTest />} />
+      </Routes>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;

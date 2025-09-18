@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
-import { isBothHandsRaised } from "./handRaiseDetection";
+import { isBothHandsRaised, isSupermanPose, isTPose } from "./queryPose";
 import "./App.css";
 
 type Props = {
@@ -71,6 +71,45 @@ export const SkeletonOverlay: React.FC<Props> = ({ poses, videoRef }) => {
           var offsetY = 2 * (leftEye.x - rightEye.x); // Double the distance from nose to left eye
           const img = new window.Image();
           img.src = "/medal.png";
+          // Draw image when loaded
+          img.onload = () => {
+            ctx.save();
+            ctx.shadowColor = "#FFD700";
+            ctx.shadowBlur = 10;
+            ctx.drawImage(img, nose.x - 20, nose.y + offsetY - 20, 40, 40);
+            ctx.restore();
+          };
+        }
+      }
+
+      if (isTPose(pose.keypoints as any)) {
+        const nose = pose.keypoints[0];
+        const leftEye = pose.keypoints[1];
+        const rightEye = pose.keypoints[2];
+        if (nose && nose.score && nose.score > 0.3) {
+          var offsetY = 2 * (leftEye.x - rightEye.x); // Double the distance from nose to left eye
+          const img = new window.Image();
+          img.src = "/wow.png";
+          // Draw image when loaded
+          img.onload = () => {
+            ctx.save();
+            ctx.shadowColor = "#FFD700";
+            ctx.shadowBlur = 10;
+            ctx.drawImage(img, nose.x - 20, nose.y + offsetY - 20, 40, 40);
+            ctx.restore();
+          };
+        }
+      }
+
+
+      if (isSupermanPose(pose.keypoints as any)) {
+        const nose = pose.keypoints[0];
+        const leftEye = pose.keypoints[1];
+        const rightEye = pose.keypoints[2];
+        if (nose && nose.score && nose.score > 0.3) {
+          var offsetY = 2 * (leftEye.x - rightEye.x); // Double the distance from nose to left eye
+          const img = new window.Image();
+          img.src = "/superman.png";
           // Draw image when loaded
           img.onload = () => {
             ctx.save();

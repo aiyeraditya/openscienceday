@@ -1,6 +1,5 @@
-import React, { useRef } from "react";
-import { useWebcam } from "./useWebcam";
-import { usePoseDetection } from "./usePoseDetection";
+import React from "react";
+import { useWebcamPose } from "./WebcamPoseContext";
 import { SkeletonOverlayBase } from "./skeletonOverlayBase";
 import { isTouchingObject } from "./queryPose";
 import { AwardOverlay } from "./awardOverlay";
@@ -20,19 +19,9 @@ const awardImages: Record<string, HTMLImageElement> = {
 };
 awardImages.medal.src = "/medal.png";
 
+
 const Memory: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoReady, setVideoReady] = React.useState(false);
-  useWebcam(videoRef);
-  const poses = usePoseDetection(videoReady ? videoRef : { current: null } as any);
-      React.useEffect(() => {
-          const video = videoRef.current;
-          if (!video) return;
-          const onReady = () => setVideoReady(true);
-          video.addEventListener('loadedmetadata', onReady);
-          if (video.readyState >= 1) setVideoReady(true);
-          return () => video.removeEventListener('loadedmetadata', onReady);
-      }, []);
+  const { videoRef, videoReady, poses } = useWebcamPose();
 
   return (
     <div className="app-root">

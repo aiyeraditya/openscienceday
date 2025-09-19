@@ -8,6 +8,17 @@
   color: white;
 }
 
+.app-title {
+  position: relative;
+  top: 0;
+  left: 50%;
+  transform: translateX(-25%);
+  font-size: 3vw;
+  font-weight: 600;
+  z-index: 3;
+  text-shadow: 0 0 8px rgba(0,0,0,0.7);
+}
+
 .header {
   position: relative;
   padding: 1vw 2vw 0 2vw;

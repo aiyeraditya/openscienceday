@@ -38,15 +38,15 @@ export function isTPose(landmarks: PoseLandmark[]): boolean {
     const ls = landmarks[5], le = landmarks[7], lw = landmarks[9];
     const rs = landmarks[6], re = landmarks[8], rw = landmarks[10];
     const reye = landmarks[1], leye = landmarks[2];
-    const buffer = (reye.x - leye.x); // Allow some buffer for arm position
+    const buffer = 2 * (reye.x - leye.x); // Allow some buffer for arm position
 
     if (![ls, le, lw, rs, re, rw, reye, leye].every(Boolean)) return false;
 
     const rightElbowAngle = getAngle(rs, re, rw);
     const leftElbowAngle = getAngle(ls, le, lw);
 
-    const elbowsStraight = rightElbowAngle > 160 && rightElbowAngle < 200
-      && leftElbowAngle > 160 && leftElbowAngle < 200;
+    const elbowsStraight = rightElbowAngle > 150 && rightElbowAngle < 210
+      && leftElbowAngle > 150 && leftElbowAngle < 210;
 
     const rightArm = rw.y < (rs.y - buffer) && rw.y > reye.y;
     const leftArm = lw.y < (ls.y - buffer) && lw.y > leye.y;

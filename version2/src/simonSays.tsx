@@ -21,8 +21,17 @@ awardImages.medal.src = "/medal.png";
 
 const SimonSays: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoReady, setVideoReady] = React.useState(false);
   useWebcam(videoRef);
-  const poses = usePoseDetection(videoRef);
+  const poses = usePoseDetection(videoReady ? videoRef : { current: null } as any);
+      React.useEffect(() => {
+          const video = videoRef.current;
+          if (!video) return;
+          const onReady = () => setVideoReady(true);
+          video.addEventListener('loadedmetadata', onReady);
+          if (video.readyState >= 1) setVideoReady(true);
+          return () => video.removeEventListener('loadedmetadata', onReady);
+      }, []);
   const [taskIndex, setTaskIndex] = React.useState(0);
   React.useEffect(() => {
     const interval = setInterval(() => {

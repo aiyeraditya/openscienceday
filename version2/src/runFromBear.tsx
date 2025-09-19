@@ -3,6 +3,7 @@ import { useWebcam } from "./useWebcam";
 import { usePoseDetection } from "./usePoseDetection";
 import { SkeletonOverlayBase } from "./skeletonOverlayBase";
 import "./App.css";
+import "./Bear.css";
 import { AwardOverlay } from "./awardOverlay";
 import { isRightSide } from "./queryPose";
 
@@ -15,14 +16,16 @@ interface Keyframe {
 }
 
 const timeline: Keyframe[] = [
-  { time: 0, webcamVideo: 1, bearVideo: 0, videoOverlay: 0, awardOverlay: 0 },
-  { time: 1, webcamVideo: 1, bearVideo: 0, videoOverlay: 1, awardOverlay: 0 },
-  { time: 2, webcamVideo: 0, bearVideo: 0, videoOverlay: 1, awardOverlay: 0 },
-  { time: 4, webcamVideo: 0, bearVideo: 1, videoOverlay: 1, awardOverlay: 0 },
-  { time: 5, webcamVideo: 0, bearVideo: 0, videoOverlay: 1, awardOverlay: 1 },
-  { time: 6, webcamVideo: 1, bearVideo: 0, videoOverlay: 0, awardOverlay: 1 },
-  { time: 7, webcamVideo: 1, bearVideo: 0, videoOverlay: 0, awardOverlay: 0 },
+  { time: 0, webcamVideo: 1, bearVideo: 0, videoOverlay: 0, awardOverlay: 0, bearAnimation: 0 },
+  { time: 5, webcamVideo: 1, bearVideo: 0, videoOverlay: 1, awardOverlay: 0, bearAnimation: 0 },
+  { time: 10, webcamVideo: 0, bearVideo: 0, videoOverlay: 1, awardOverlay: 0, bearAnimation: 0 },
+  { time: 15, webcamVideo: 0, bearVideo: 1, videoOverlay: 1, awardOverlay: 0, bearAnimation: 0 },
+  { time: 30, webcamVideo: 0, bearVideo: 1, videoOverlay: 1, awardOverlay: 1, bearAnimation: 1 },
+  { time: 35, webcamVideo: 1, bearVideo: 0, videoOverlay: 0, awardOverlay: 1, bearAnimation: 0 },
+  // { time: 60, webcamVideo: 0, bearVideo: 0, videoOverlay: 0, awardOverlay: 0 },
 ];
+
+
 
 function useTimeline(timeline: Keyframe[]) {
   const [time, setTime] = useState(0);
@@ -54,6 +57,14 @@ awardImages.alive.src = "/happy.png";
 awardImages.dead.src = "/death.png";
 
 const RunFromBear: React.FC = () => {
+  // Play bear sound at 30 seconds
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const audio = new Audio('/bearSound.mp3');
+      audio.play();
+    }, 35000);
+    return () => clearTimeout(timeout);
+  }, []);
   const videoRef = useRef<HTMLVideoElement>(null);
   useWebcam(videoRef);
   const poses = usePoseDetection(videoRef);
@@ -64,6 +75,7 @@ const RunFromBear: React.FC = () => {
       <div className="header">
         <h1> Run away from the Bear</h1>
       </div>
+      <div className="vertical-bar"></div>
       <div
         className="video-container"
         style={{
@@ -80,17 +92,22 @@ const RunFromBear: React.FC = () => {
           style={{ opacity: opacity.webcamVideo }}
         />
 
-        <video
-          src="/disco_bg2.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
+        <img
+          src="/crossroads.jpg"
           className="bear-video"
           style={{ opacity: opacity.bearVideo }}
           />
+
+        <img
+          src="/bear.png"
+          className="bear-animation"
+          style={{
+            opacity: opacity.bearVideo,
+            animation: opacity.bearAnimation === 1 ? "moveRight 2s forwards" : "none",
+          }}
+        />
         <SkeletonOverlayBase poses={poses} videoRef={videoRef} alpha={opacity.videoOverlay} />
-        <AwardOverlay poses={poses} videoRef={videoRef} awardFunction={isRightSide} awardImage={awardImages.alive} punishImage={awardImages.dead} alpha={opacity.awardOverlay}/>
+        <AwardOverlay poses={poses} videoRef={videoRef} awardFunction={isRightSide} awardImage={awardImages.alive} punishImage={awardImages.dead} alpha={opacity.awardOverlay} />
       </div>
     </div>
   );

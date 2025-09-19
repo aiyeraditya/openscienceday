@@ -1,0 +1,30 @@
+.bear-animation {
+    width: 30%;
+    height: auto;
+    position: absolute;
+    bottom: 50%;
+    right: -25%;
+    z-index: 2;
+    border-radius: 12px;
+
+}
+
+.vertical-bar {
+    position: absolute;
+    left: 75%;
+    bottom: 0;
+    width: 30rem;
+    height: 100%; /* Add height to make it visible */
+    background-color: #222; /* Use background-color instead of color */
+    z-index: 5;
+    border-radius: 3px;
+}
+
+@keyframes moveRight {
+    from {
+        right: -25%;
+    }
+    to {
+        right: 4%;
+    }
+    }

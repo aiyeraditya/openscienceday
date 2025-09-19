@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Quiz.css";
 
 type QuizQuestionProps = {
     question: string;
@@ -14,17 +15,15 @@ optionImages.handsOut.src = "/handsOut.png";
 
 const QuizQuestion: React.FC<QuizQuestionProps> = ({ question, options }) => {
     return (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "20vh", display: "flex", justifyContent: "center", alignItems: "center", background: "#fff", zIndex: 9999 }}>
-            <div>
-            <h3 style={{ textAlign: "center" }}>{question}</h3>
-            <div style={{ display: "flex", gap: "16px", justifyContent: "center" }} >
-                <button style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "4vh", padding: "1vh 2vh" }}>
-                    <img src={optionImages.handsUp.src} alt="hands up" style={{ height: "6vh", verticalAlign: "middle" }} /> {options[0]}
+        <div className="quiz-question">
+            <h2 className="quiz-question-text">{question}</h2>
+            <div className="quiz-options">
+                <button className="quiz-option">
+                    <img src={optionImages.handsUp.src} alt="hands up" className="quiz-option-icon" /> {options[0]}
                 </button>
-                <button style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "4vh", padding: "1vh 2vh" }}>
-                    <img src={optionImages.handsOut.src} alt="hands out" style={{ height: "6vh", verticalAlign: "middle" }} /> {options[1]}
+                <button className="quiz-option">
+                    <img src={optionImages.handsOut.src} alt="hands out" className="quiz-option-icon" /> {options[1]}
                 </button>
-            </div>
             </div>
         </div>
     );

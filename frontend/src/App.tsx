@@ -22,17 +22,18 @@ export default function App() {
 			if (!video || video.videoWidth === 0) return;
 			// Draw to hidden canvas at 192x192
 			const canvas = document.createElement('canvas');
-			canvas.width = DOWNSCALED;
-			canvas.height = DOWNSCALED;
+			canvas.width = 192;
+			canvas.height = 128;
 			const ctx = canvas.getContext('2d');
 			if (!ctx) return;
-			ctx.drawImage(video, 0, 0, DOWNSCALED, DOWNSCALED);
+			ctx.drawImage(video, 0, 0, 192, 128);
 			canvas.toBlob(async (blob) => {
 				if (!blob) return;
 				try {
 					const result: BackendPose = await sendFrameToBackend(blob);
 					setPoses(result.keypoints?.[0] || []);
 				} catch (e) {
+					console.error("Error sending frame to backend:", e);
 					// Optionally handle error
 				}
 			}, 'image/jpeg', 0.8);
@@ -52,10 +53,19 @@ export default function App() {
 		if (!ctx) return;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		// Draw skeleton for each detected person
+		console.log(poses.length);
 		poses.forEach((person: any) => {
 			person.forEach((kp: any, i: number) => {
-				const [y, x, score] = kp;
-				if (score > 0.2) {
+				console.log(kp);
+				// Support both array and object keypoint formats
+				let x, y, score;
+				if (Array.isArray(kp)) {
+					[y, x, score] = kp;
+				} else if (kp && typeof kp === 'object') {
+					// Some pose models use {x, y, score}
+					({x, y, score} = kp);
+				}
+				if (score > 0.2 && x !== undefined && y !== undefined) {
 					ctx.beginPath();
 					ctx.arc(x * canvas.width, y * canvas.height, 4, 0, 2 * Math.PI);
 					ctx.fillStyle = 'red';

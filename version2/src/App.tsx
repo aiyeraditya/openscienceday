@@ -4,6 +4,7 @@ import OverlayTest from "./OverlayTest";
 import SimonSays from "./simonSays";
 import RunFromBear from "./runFromBear";
 import LearnObject from "./learnObject";
+import QuizComponent from "./quiz";
 import "./App.css";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/simon-says" element={<SimonSays />} />
         <Route path="/run-from-bear" element={<RunFromBear />} />
         <Route path="/learn-object" element={<LearnObject />} />
+        <Route path="/quiz" element={<QuizComponent />} />
       </Routes>
     </BrowserRouter>
   );
